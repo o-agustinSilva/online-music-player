@@ -18,8 +18,18 @@ module.exports = (sequelize, DataTypes) => {
         guests_can_skip: {
             type: DataTypes.BOOLEAN,
             defaultValue: false
+        },
+        OwnerId: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
         }
     });
+
+    // Sequelize creates an get() function
+    Rooms.associate = (models) => {
+        Rooms.hasMany(models.Users, { as: 'Guests'});
+        Rooms.belongsTo(models.Users, { as: 'Owner' }); // A room belongs only to one user
+    };
 
     return Rooms;
 };
