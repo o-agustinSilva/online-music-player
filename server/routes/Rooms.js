@@ -1,26 +1,15 @@
 const express = require("express");
 const router = express.Router();
-const { Rooms } = require("../models");
+const roomController = require("../controllers/roomController");
 
-router.get('/', async (req, res) => {
-    const listOfRooms = await Rooms.findAll();
-    res.json(listOfRooms);
-});
-
-router.post('/', async (req, res) => {
-    const post = req.body;
-    await Rooms.create(post);
-    res.json(post);
-});
-
-router.delete('/:id', async (req, res) => {
-    const room = await Rooms.findByPk(req.params.id);
-    console.log(req.params.id);
-    if (!room)
-        return res.status(404).send("Room not found.");
-
-    await room.destroy();
-    return res.status(200).send("The room has been deleted successfully.");
-});
-
+router.route('/')
+    .get(roomController.getAllRooms)
+    .post(roomController.createRoom)
+    
+router.route('/:id')    
+    .get(roomController.getGuests)
+    .delete(roomController.deleteRoom)
+    .post(roomController.kickUser)
+    
+    
 module.exports = router;
