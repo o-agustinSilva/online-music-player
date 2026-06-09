@@ -7,6 +7,14 @@ const process = require('process');
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
+
+// Support environment variable overrides for containerization
+if (process.env.DB_USERNAME) config.username = process.env.DB_USERNAME;
+if (process.env.DB_PASSWORD) config.password = process.env.DB_PASSWORD;
+if (process.env.DB_NAME) config.database = process.env.DB_NAME;
+if (process.env.DB_HOST) config.host = process.env.DB_HOST;
+if (process.env.DB_PORT) config.port = process.env.DB_PORT;
+
 const db = {};
 
 let sequelize;

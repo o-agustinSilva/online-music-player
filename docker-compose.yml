@@ -1,0 +1,56 @@
+services:
+  db:
+    image: mysql:8
+    container_name: music_player_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password_here
+      MYSQL_DATABASE: music-player
+      MYSQL_USER: osilva
+      MYSQL_PASSWORD: skateordie123
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "osilva", "-pskateordie123"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: music_player_server
+    restart: always
+    environment:
+      - NODE_ENV=development
+      - PORT=3500
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_USERNAME=osilva
+      - DB_PASSWORD=skateordie123
+      - DB_NAME=music-player
+      - ACCESS_TOKEN_SECRET=d053548abddb233ede1e981bf5e1752af0c8c2a8ba2c21e0ec32b50fa996cc357f86654e370e27edea9f94f5de4bc6015cbd5f788d1fda429ac5ab84625920ce
+      - REFRESH_TOKEN_SECRET=30d78ebc26864b0a7d9ab8bd11836475418b29263391504a8e2ab3d04d5fb53a22e4a1fa64159bd078d232109e0186544c21f756d6f8555c2051768c57a42357
+    ports:
+      - "3500:3500"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: music_player_client
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      - server
+
+volumes:
+  db_data:
