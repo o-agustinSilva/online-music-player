@@ -1,8 +1,7 @@
 services:
   db:
-    image: mysql:8
+    image: mysql:8.0
     container_name: music_player_db
-    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
@@ -25,7 +24,6 @@ services:
       context: ./server
       dockerfile: Dockerfile
     container_name: music_player_server
-    restart: always
     environment:
       - NODE_ENV=development
       - PORT=${PORT}
@@ -47,7 +45,6 @@ services:
       context: ./client
       dockerfile: Dockerfile
     container_name: music_player_client
-    restart: always
     ports:
       - "3000:80"
     depends_on:
